@@ -1,0 +1,48 @@
+import { getAuth } from "@clerk/nextjs/server"
+import { NextResponse } from "next/server"
+
+// Create the store
+
+export async function POST(request){
+    try {
+       const {userId} =getAuth(request)
+       //Get the data from the form
+
+       const formData =await request.formData()
+
+       const name =formData.get("name")
+       const username =formData.get("userName")
+       const description =formData.get("description")
+       const email =formData.get("email")
+       const address =formData.get("address")
+       const image  =formData.get("image")
+
+       if(!name || !username || !description || !email ||
+        !contact || !address || !image
+       ) {
+        return NextResponse.json({error:"missing store info"}, {status:400})
+       }
+
+       //check is user have already registered a store
+       const store =await prisma.store.findFirst({
+        where: {userId: userId}
+       })
+
+       //if store is already registered then send status of store 
+       if(store) {
+        return NextResponse.json({status:store.status})
+       }
+
+       //check is username is already taken
+
+       const isUsernameTaken =await prisma.store.findFirst({
+           where:{username: username.toLowerCase() }
+       })
+
+       if(isUsernameTaken){
+        return NextResponse.json({error:"username already taken"}, {status:400})
+       }
+    } catch(error) {
+
+    }
+}
