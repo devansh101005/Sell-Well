@@ -4,8 +4,10 @@
 
 //Auth seller
 
+import prisma from "@/lib/prisma";
 import authSeller from "@/middlewares/authSeller";
 import { getAuth } from "@clerk/nextjs/dist/types/server";
+import { NextResponse } from "next/server";
 
 export async function GET(request){
   try {
@@ -20,9 +22,14 @@ export async function GET(request){
    }
    
 
-   const storeInfo=await prisma.store.findUnique()
+   const storeInfo=await prisma.store.findUnique({where:{userId}})
+   
+   return NextResponse.json({isSeller,storeInfo})
+
 
   }catch(error){
+    console.log(error);
+    return NextResponse.json({error:error.code || error.message}, {status:400})
 
   }
 
