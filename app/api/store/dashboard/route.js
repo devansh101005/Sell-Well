@@ -14,7 +14,19 @@ export async function GET(request){
        //Get all orderds for seller 
        const orders =await prisma.order.findMany({where:{storeId}})
 
-       
+       const products =await prisma.rating.findMany({
+        where:{productId: {in: products.map(product => product.is)}},
+        include:{user:true,product:true}
+       })
+
+       const dashboardData={
+        ratings,
+        totalOrders:orders.length,
+        totalEarnings:Math.round(orders.reduce((acc,order)=> acc+order.total,0)),
+        totalProducts:products.length
+       }
+
+       return NextResponse.json({dashboardData});
 
 
     }catch(error){
