@@ -7,22 +7,50 @@ import toast from "react-hot-toast"
 
 export default function AdminStores() {
 
+    const {user} =useUser();
+    const {getToken} =useAuth()
+
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
 
     const fetchStores = async () => {
-        setStores(storesDummyData)
+        // setStores(storesDummyData)
+        // setLoading(false)
+        try {
+            const token =await getToken()
+            const {data} =await axios.get('/api/admin/stores',{headers:{
+                Authorization:`Bearer ${token}`
+            }})
+            setStores(data.stores)
+        }catch(error) {
+        toast.error(error?.response?.data?.error || error.message)
+        }
         setLoading(false)
     }
 
     const toggleIsActive = async (storeId) => {
         // Logic to toggle the status of a store
+        try {
+          const token =await getToken()
+            const {data} =await axios.get('/api/admin/toggle-store',{storeId},{headers:{
+                Authorization:`Bearer ${token}`
+            }})
+            await fetchStores()
+            toast.success(data.message)
+
+        }catch(error) {
+        toast.error(error?.response?.data?.error || error.message)
+        }
+
 
     }
 
     useEffect(() => {
-        fetchStores()
-    }, [])
+        if(user){
+            fetchStores()
+
+        }
+    }, [user])
 
     return !loading ? (
         <div className="text-slate-500 mb-28">
