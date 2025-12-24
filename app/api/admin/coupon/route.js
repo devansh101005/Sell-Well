@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export async function POST (request){
     try {
-     const {userId}=getAuth()
+     const {userId}=getAuth(request)
         const isAdmin =await authAdmin(userId)
 
         if(!isAdmin){
@@ -16,7 +16,17 @@ export async function POST (request){
         const {coupon} =await request.json()
         coupon.code=coupon.code.toUpperCase()
 
-        await prisma.coupon.create({data:coupon})
+        await prisma.coupon.create({data:coupon}).then(async(coupon)=>
+        {
+            //Run INNgest Scheduler Function to delete coupon on expire
+            await inngest.send({
+                name:"app/coupon.expired",
+                data:{
+                    code:coupon.code,
+                    expires_at:coupon.expiresAt,
+            }
+            })
+        })
 
         return NextResponse.json({message:"Coupn added succesfully"})
 
@@ -53,7 +63,7 @@ export async function DELETE(request){
 
 export async function GET(request){
     try {
-        const {userId} =getAuth()
+        const {userId} =getAuth(request)
         const isAdmin=await authAdmin(userId)
 
         if(!isAdmin) {
