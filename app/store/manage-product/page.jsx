@@ -4,8 +4,11 @@ import { toast } from "react-hot-toast"
 import Image from "next/image"
 import Loading from "@/components/Loading"
 import { productDummyData } from "@/assets/assets"
+import { useAuth } from "@clerk/nextjs"
 
 export default function StoreManageProducts() {
+
+    const {getToken} =useAuth()
 
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
 
