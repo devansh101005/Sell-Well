@@ -18,6 +18,8 @@ export default function StoreAddProduct() {
     })
     const [loading, setLoading] = useState(false)
 
+    
+
 
     const onChangeHandler = (e) => {
         setProductInfo({ ...productInfo, [e.target.name]: e.target.value })
