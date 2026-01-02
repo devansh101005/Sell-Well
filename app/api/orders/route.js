@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import {PaymentMethod} from "@prisma/client"
+
 
 
 
@@ -139,10 +141,10 @@ for(const [storeId, sellerItems] of ordersByStore.entries()){
     where: {
       userId,
       OR: [
-        { paymentMethod: paymentMethod.COD },
+        { paymentMethod: PaymentMethod.COD },
         {
           AND: [
-            { paymentMethod: paymentMethod.STRIPE },
+            { paymentMethod: PaymentMethod.STRIPE },
             { isPaid: true }
           ]
         }
